@@ -10,6 +10,15 @@ void StateManager::addState(int stateID, std::unique_ptr<State>& state)
 	stateMap[stateID] = std::move(state);
 }
 
+void StateManager::init()
+{
+	for (auto it = stateMap.begin(); it != stateMap.end(); ++it)
+	{
+		it->second->init();
+	}
+	stateMap[currentStateID]->enter();
+}
+
 void StateManager::handleEvent(const sf::Event& ev)
 {
 	stateMap[currentStateID]->handleEvent(ev);
@@ -20,9 +29,9 @@ void StateManager::update()
 	stateMap[currentStateID]->update();
 }
 
-void StateManager::draw(sf::RenderTarget& target)
+void StateManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-	stateMap[currentStateID]->draw(target);
+	stateMap.at(currentStateID)->draw(target, states);
 }
 
 void StateManager::finishFrame()

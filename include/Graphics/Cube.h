@@ -5,6 +5,7 @@
 
 struct CubeMaterial
 {
+	CubeMaterial();
 	CubeMaterial(float size, const sf::Texture* netTex, sf::Color topShade, sf::Color frontShade, sf::Color leftShade, sf::Color backShade, sf::Color rightShade);
 
 	float size;
@@ -18,6 +19,7 @@ struct CubeMaterial
 
 struct CubeOrientation
 {
+	CubeOrientation();
 	CubeOrientation(float yaw, float pitch);
 
 	float yaw;
@@ -28,6 +30,7 @@ struct CubeOrientation
 class Cube : public sf::Drawable
 {
 public:
+	Cube();
 	Cube(const CubeMaterial& material, const CubeOrientation& orientation);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

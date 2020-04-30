@@ -15,7 +15,12 @@ void Application::run()
 {
 	sf::RenderWindow window(sf::VideoMode(800, 600), "Isometric Cubes");
 	window.setFramerateLimit(60);
+	sf::View view;
+	view.setSize(sf::Vector2f(800, -600));
+	view.setCenter(400, 300);
+	window.setView(view);
 
+	stateManager.init();
 	while (window.isOpen())
 	{
 		sf::Event ev;
@@ -28,7 +33,7 @@ void Application::run()
 		stateManager.update();
 
 		window.clear();
-		stateManager.draw(window);
+		window.draw(stateManager);
 		window.display();
 
 		stateManager.finishFrame();

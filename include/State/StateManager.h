@@ -11,18 +11,20 @@
 #include "State/State.h"
 #include "State/PlayState.h"
 
-class StateManager
+class StateManager : public sf::Drawable
 {
 public:
 	StateManager(int initialStateID);
 
 	void addState(int stateID, std::unique_ptr<State>& state);
 
+	void init();
+
 	void handleEvent(const sf::Event& ev);
 
 	void update();
 
-	void draw(sf::RenderTarget& target);
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
 	void finishFrame();
 private:

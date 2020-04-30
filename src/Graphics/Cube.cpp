@@ -5,8 +5,19 @@
 
 #include "Util/MathFunctions.h"
 
+Cube::Cube()
+{
+}
+
+Cube::Cube(const CubeMaterial& material, const CubeOrientation& orientation)
+{
+	init(material, orientation);
+}
+
 void Cube::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+	states.transform *= top.transform;
+	target.draw(top.sprite, states);
 }
 
 void Cube::init(const CubeMaterial& material, const CubeOrientation& orientation)
@@ -17,30 +28,27 @@ void Cube::init(const CubeMaterial& material, const CubeOrientation& orientation
 	sf::IntRect backRect(3 * material.size, 0, material.size, material.size);
 	sf::IntRect rightRect(4 * material.size, 0, material.size, material.size);
 
-	CubeSide topSide;
-	CubeSide leftSide;
-	CubeSide rightSide;
-
 	if (orientation.yaw < 90.0f)
 	{
-		leftSide.shade = material.rightShade; leftSide.sprite = sf::Sprite(*material.netTex, rightRect);
-		rightSide.shade = material.frontShade; rightSide.sprite = sf::Sprite(*material.netTex, frontRect);
+		left.shade = material.rightShade; left.sprite = sf::Sprite(*material.netTex, rightRect);
+		right.shade = material.frontShade; right.sprite = sf::Sprite(*material.netTex, frontRect);
 	}
 	else if (orientation.yaw < 180.0f)
 	{
-		leftSide.shade = material.backShade; leftSide.sprite = sf::Sprite(*material.netTex, backRect);
-		rightSide.shade = material.rightShade; rightSide.sprite = sf::Sprite(*material.netTex, rightRect);
+		left.shade = material.backShade; left.sprite = sf::Sprite(*material.netTex, backRect);
+		right.shade = material.rightShade; right.sprite = sf::Sprite(*material.netTex, rightRect);
 	}
 	else if (orientation.yaw < 270.0f)
 	{
-		leftSide.shade = material.leftShade; leftSide.sprite = sf::Sprite(*material.netTex, leftRect);
-		rightSide.shade = material.backShade; rightSide.sprite = sf::Sprite(*material.netTex, backRect);
+		left.shade = material.leftShade; left.sprite = sf::Sprite(*material.netTex, leftRect);
+		right.shade = material.backShade; right.sprite = sf::Sprite(*material.netTex, backRect);
 	}
 	else
 	{
-		leftSide.shade = material.frontShade; leftSide.sprite = sf::Sprite(*material.netTex, frontRect);
-		rightSide.shade = material.leftShade; rightSide.sprite = sf::Sprite(*material.netTex, leftRect);
+		left.shade = material.frontShade; left.sprite = sf::Sprite(*material.netTex, frontRect);
+		right.shade = material.leftShade; right.sprite = sf::Sprite(*material.netTex, leftRect);
 	}
+	top.shade = material.topShade; top.sprite = sf::Sprite(*material.netTex, topRect);
 
 	float tu = material.size * orientation.cosYaw * orientation.sinPitch;
 	float tl = material.size * orientation.sinYaw * orientation.sinPitch;
@@ -51,8 +59,6 @@ void Cube::init(const CubeMaterial& material, const CubeOrientation& orientation
 
 	float halfSize = material.size / 2.0f;
 
-	sf::Transform tr;
-
 	// Top
 	std::vector<sf::Vector2f> topPoints
 	{
@@ -62,15 +68,22 @@ void Cube::init(const CubeMaterial& material, const CubeOrientation& orientation
 		sf::Vector2f(-halfSize, halfSize)
 	};
 
-	tr = sf::Transform::Identity;
-	tr.rotate(orientation.yaw).scale(sf::Vector2f(1.0f, orientation.sinPitch)).translate(sf::Vector2f(0.0f, b / 2.0f));
-	for (auto it = topPoints.begin(); it != topPoints.end; ++it) {
-		
-	}
+	top.sprite.setOrigin(halfSize, halfSize);
+	top.transform.translate(sf::Vector2f(0.0f, b / 2.0f)).scale(sf::Vector2f(1.0f, orientation.sinPitch)).rotate(orientation.yaw);
+}
+
+CubeMaterial::CubeMaterial() :
+	CubeMaterial(0, nullptr, sf::Color::White, sf::Color::White, sf::Color::White, sf::Color::White, sf::Color::White)
+{
 }
 
 CubeMaterial::CubeMaterial(float size, const sf::Texture* netTex, sf::Color topShade, sf::Color frontShade, sf::Color leftShade, sf::Color backShade, sf::Color rightShade) :
 	size(size), netTex(netTex), topShade(topShade), frontShade(frontShade), leftShade(leftShade), backShade(backShade), rightShade(rightShade)
+{
+}
+
+CubeOrientation::CubeOrientation() :
+	CubeOrientation(0.0f, 0.0f)
 {
 }
 
