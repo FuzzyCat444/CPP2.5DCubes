@@ -91,11 +91,14 @@ void CubeVisual::set(const CubeMaterial& material, const CubeOrientation& orient
 	float t = tu + tl;
 	float b2 = b / 2.0f;
 	float t2 = t / 2.0f;
+	float l2 = l / 2.0f;
+	float r2 = r / 2.0f;
 
 	sf::Vector2f startTexCoords(material.indexX * material.size * 5, material.indexY * material.size);
 	sf::Vector2f texSizeX(material.size, 0.0f);
 	sf::Vector2f texSizeY(0.0f, material.size);
 
+	// Top
 	sf::Vector2f tp0(halfSideW * (orientation.cosYaw - orientation.sinYaw), halfSideW * (orientation.cosYaw + orientation.sinYaw));
 	sf::Vector2f tp1(-tp0.y, tp0.x);
 	sf::Vector2f tp2(-tp1.y, tp1.x);
@@ -109,6 +112,86 @@ void CubeVisual::set(const CubeMaterial& material, const CubeOrientation& orient
 	vertices.append(sf::Vertex(tp1, material.topShade, startTexCoords));
 	vertices.append(sf::Vertex(tp2, material.topShade, startTexCoords + texSizeY));
 	vertices.append(sf::Vertex(tp3, material.topShade, startTexCoords + texSizeX + texSizeY));
+
+	sf::Vector2f moveSides(l2 - r2, b2 - t2);
+
+	// Left
+	sf::Vector2f lp0(0.0f, 0.0f);
+	sf::Vector2f lp1(-sideW * orientation.sinYawMod90, 0.0f);
+	sf::Vector2f lp2(-sideW * orientation.sinYawMod90, -sideW * orientation.cosPitch);
+	sf::Vector2f lp3(0.0f, -sideW * orientation.cosPitch);
+	lp0 += moveSides;
+	lp1 += moveSides;
+	lp2 += moveSides;
+	lp3 += moveSides;
+	sf::Vector2f shearLeft(0.0f, tu);
+	lp1 += shearLeft;
+	lp2 += shearLeft;
+	float texIndexLeft = 0.0f;
+	sf::Color shadeLeft = sf::Color::White;
+	if (orientation.yaw < 90.0f)
+	{
+		texIndexLeft = 4.0f;
+		shadeLeft = material.rightShade;
+	}
+	else if (orientation.yaw < 180.0f)
+	{
+		texIndexLeft = 3.0f;
+		shadeLeft = material.backShade;
+	}
+	else if (orientation.yaw < 270.0f)
+	{
+		texIndexLeft = 2.0f;
+		shadeLeft = material.leftShade;
+	}
+	else
+	{
+		texIndexLeft = 1.0f;
+		shadeLeft = material.frontShade;
+	}
+	vertices.append(sf::Vertex(lp0, shadeLeft, startTexCoords + texIndexLeft * texSizeX + texSizeX));
+	vertices.append(sf::Vertex(lp1, shadeLeft, startTexCoords + texIndexLeft * texSizeX));
+	vertices.append(sf::Vertex(lp2, shadeLeft, startTexCoords + texIndexLeft * texSizeX + texSizeY));
+	vertices.append(sf::Vertex(lp3, shadeLeft, startTexCoords + texIndexLeft * texSizeX + texSizeX + texSizeY));
+
+	// Right
+	sf::Vector2f rp0(sideW * orientation.cosYawMod90, 0.0f);
+	sf::Vector2f rp1(0.0f, 0.0f);
+	sf::Vector2f rp2(0.0f, -sideW * orientation.cosPitch);
+	sf::Vector2f rp3(sideW * orientation.cosYawMod90, -sideW * orientation.cosPitch);
+	rp0 += moveSides;
+	rp1 += moveSides;
+	rp2 += moveSides;
+	rp3 += moveSides;
+	sf::Vector2f shearRight(0.0f, tl);
+	rp0 += shearRight;
+	rp3 += shearRight;
+	float texIndexRight = 0.0f;
+	sf::Color shadeRight = sf::Color::White;
+	if (orientation.yaw < 90.0f)
+	{
+		texIndexRight = 1.0f;
+		shadeRight = material.frontShade;
+	}
+	else if (orientation.yaw < 180.0f)
+	{
+		texIndexRight = 4.0f;
+		shadeRight = material.rightShade;
+	}
+	else if (orientation.yaw < 270.0f)
+	{
+		texIndexRight = 3.0f;
+		shadeRight = material.backShade;
+	}
+	else
+	{
+		texIndexRight = 2.0f;
+		shadeRight = material.leftShade;
+	}
+	vertices.append(sf::Vertex(rp0, shadeRight, startTexCoords + texIndexRight * texSizeX + texSizeX));
+	vertices.append(sf::Vertex(rp1, shadeRight, startTexCoords + texIndexRight * texSizeX));
+	vertices.append(sf::Vertex(rp2, shadeRight, startTexCoords + texIndexRight * texSizeX + texSizeY));
+	vertices.append(sf::Vertex(rp3, shadeRight, startTexCoords + texIndexRight * texSizeX + texSizeX + texSizeY));
 }
 
 const sf::VertexArray& CubeVisual::getTransformedVertices()

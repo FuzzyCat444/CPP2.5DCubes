@@ -2,6 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "Util/ColorShade.h"
+
 PlayState::PlayState()
 {
 }
@@ -20,7 +22,11 @@ void PlayState::update()
 	static float x = 0.0f;
 	x++;
 	cubeBuilder.clear();
-	CubeVisual cube(CubeMaterial(0, 0, 16, sf::Color::White, sf::Color::White, sf::Color::White, sf::Color::White, sf::Color::White), CubeOrientation(x, 30.0f));
+	CubeVisual cube(CubeMaterial(0, 0, 16, shaded(sf::Color::White, 1.0f), 
+										   shaded(sf::Color::White, 0.8f), 
+										   shaded(sf::Color::White, 0.6f), 
+										   shaded(sf::Color::White, 0.4f), 
+										   shaded(sf::Color::White, 0.6f)), CubeOrientation(x, 30.0f));
 	cube.scale(100.0f, 100.0f);
 	cube.move(200.0f, 200.0f);
 	cubeBuilder.putCube(cube);
