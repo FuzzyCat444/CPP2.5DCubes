@@ -41,6 +41,18 @@ void CubeBuilder::clear()
 
 /*
 
+CubeMaterial
+
+*/
+
+CubeMaterial::CubeMaterial(int indexX, int indexY, int size, sf::Color topShade, sf::Color frontShade, sf::Color leftShade, sf::Color backShade, sf::Color rightShade) :
+	indexX(indexX), indexY(indexY), size(size), topShade(topShade), frontShade(frontShade), leftShade(leftShade), backShade(backShade), rightShade(rightShade)
+{
+
+}
+
+/*
+
 CubeOrientation
 
 */
@@ -83,7 +95,7 @@ void CubeVisual::set(const CubeMaterial& material, const CubeOrientation& orient
 	float l2 = l / 2.0f;
 	float r2 = r / 2.0f;
 
-	sf::Vector2f startTexCoords(material.indexX * material.size * 5, material.indexY * material.size);
+	sf::Vector2f startTexCoords(material.indexX * material.size * 2.0f, material.indexY * material.size);
 	sf::Vector2f texSizeX(material.size, 0.0f);
 	sf::Vector2f texSizeY(0.0f, material.size);
 
@@ -116,28 +128,16 @@ void CubeVisual::set(const CubeMaterial& material, const CubeOrientation& orient
 	sf::Vector2f shearLeft(0.0f, tu);
 	lp1 += shearLeft;
 	lp2 += shearLeft;
-	float texIndexLeft = 0.0f;
+	float texIndexLeft = 1.0f;
 	sf::Color shadeLeft = sf::Color::White;
 	if (orientation.yaw < 90.0f)
-	{
-		texIndexLeft = 4.0f;
 		shadeLeft = material.rightShade;
-	}
 	else if (orientation.yaw < 180.0f)
-	{
-		texIndexLeft = 3.0f;
 		shadeLeft = material.backShade;
-	}
 	else if (orientation.yaw < 270.0f)
-	{
-		texIndexLeft = 2.0f;
 		shadeLeft = material.leftShade;
-	}
 	else
-	{
-		texIndexLeft = 1.0f;
 		shadeLeft = material.frontShade;
-	}
 	vertices.append(sf::Vertex(lp0, shadeLeft, startTexCoords + texIndexLeft * texSizeX + texSizeX));
 	vertices.append(sf::Vertex(lp1, shadeLeft, startTexCoords + texIndexLeft * texSizeX));
 	vertices.append(sf::Vertex(lp2, shadeLeft, startTexCoords + texIndexLeft * texSizeX + texSizeY));
@@ -155,28 +155,16 @@ void CubeVisual::set(const CubeMaterial& material, const CubeOrientation& orient
 	sf::Vector2f shearRight(0.0f, tl);
 	rp0 += shearRight;
 	rp3 += shearRight;
-	float texIndexRight = 0.0f;
+	float texIndexRight = 1.0f;
 	sf::Color shadeRight = sf::Color::White;
 	if (orientation.yaw < 90.0f)
-	{
-		texIndexRight = 1.0f;
 		shadeRight = material.frontShade;
-	}
 	else if (orientation.yaw < 180.0f)
-	{
-		texIndexRight = 4.0f;
 		shadeRight = material.rightShade;
-	}
 	else if (orientation.yaw < 270.0f)
-	{
-		texIndexRight = 3.0f;
 		shadeRight = material.backShade;
-	}
 	else
-	{
-		texIndexRight = 2.0f;
 		shadeRight = material.leftShade;
-	}
 	vertices.append(sf::Vertex(rp0, shadeRight, startTexCoords + texIndexRight * texSizeX + texSizeX));
 	vertices.append(sf::Vertex(rp1, shadeRight, startTexCoords + texIndexRight * texSizeX));
 	vertices.append(sf::Vertex(rp2, shadeRight, startTexCoords + texIndexRight * texSizeX + texSizeY));

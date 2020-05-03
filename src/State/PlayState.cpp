@@ -10,7 +10,7 @@ PlayState::PlayState()
 
 void PlayState::init()
 {
-	cubeSheetTexture.loadFromFile("cubesheet.png");
+	cubeSheetTexture.loadFromFile("cubesheettemp.png");
 	CubeMaterial mat =
 	{
 		0, 0, 16,
@@ -27,7 +27,7 @@ void PlayState::init()
 	mat.indexY = 1;
 	cubeSheet.add(1, mat);
 	mat.indexX = 1;
-	mat.indexY = 0;
+	mat.indexY = 2;
 	cubeSheet.add(2, mat);
 }
 

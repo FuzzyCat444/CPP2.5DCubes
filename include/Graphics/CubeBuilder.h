@@ -5,6 +5,7 @@
 
 struct CubeMaterial
 {
+	CubeMaterial(int indexX, int indexY, int size, sf::Color topShade, sf::Color frontShade, sf::Color leftShade, sf::Color backShade, sf::Color rightShade);
 	int indexX;
 	int indexY;
 	int size;
