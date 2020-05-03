@@ -4,6 +4,7 @@
 #include "State/State.h"
 #include "State/StateType.h"
 #include "Graphics/CubeBuilder.h"
+#include "Graphics/CubeSheet.h"
 
 class PlayState : public State
 {
@@ -22,7 +23,8 @@ public:
 
 	void exit() override;
 private:
-	sf::Texture furnace;
+	sf::Texture cubeSheetTexture;
+	CubeSheet cubeSheet;
 	CubeBuilder cubeBuilder;
 };
 

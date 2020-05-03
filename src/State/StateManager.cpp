@@ -7,7 +7,7 @@ StateManager::StateManager(int initialStateID) : currentStateID(initialStateID)
 
 void StateManager::addState(int stateID, std::unique_ptr<State>& state)
 {
-	stateMap[stateID] = std::move(state);
+	stateMap.insert(std::make_pair(stateID, std::move(state)));
 }
 
 void StateManager::init()
@@ -16,17 +16,17 @@ void StateManager::init()
 	{
 		it->second->init();
 	}
-	stateMap[currentStateID]->enter();
+	stateMap.at(currentStateID)->enter();
 }
 
 void StateManager::handleEvent(const sf::Event& ev)
 {
-	stateMap[currentStateID]->handleEvent(ev);
+	stateMap.at(currentStateID)->handleEvent(ev);
 }
 
 void StateManager::update()
 {
-	stateMap[currentStateID]->update();
+	stateMap.at(currentStateID)->update();
 }
 
 void StateManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -36,12 +36,12 @@ void StateManager::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void StateManager::finishFrame()
 {
-	State& prevState = *stateMap[currentStateID];
+	State& prevState = *stateMap.at(currentStateID);
 	if (prevState.doSwitch)
 	{
 		prevState.doSwitch = false;
 		currentStateID = prevState.nextStateID;
 		prevState.exit();
-		stateMap[currentStateID]->enter();
+		stateMap.at(currentStateID)->enter();
 	}
 }

@@ -41,17 +41,6 @@ void CubeBuilder::clear()
 
 /*
 
-CubeMaterial
-
-*/
-
-CubeMaterial::CubeMaterial(int indexX, int indexY, int size, sf::Color topShade, sf::Color frontShade, sf::Color leftShade, sf::Color backShade, sf::Color rightShade) :
-	indexX(indexX), indexY(indexY), size(size), topShade(topShade), frontShade(frontShade), leftShade(leftShade), backShade(backShade), rightShade(rightShade)
-{
-}
-
-/*
-
 CubeOrientation
 
 */
