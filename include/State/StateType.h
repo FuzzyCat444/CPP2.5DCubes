@@ -1,7 +1,7 @@
 #ifndef STATETYPE_H
 #define STATETYPE_H
 
-enum class StateType
+enum class StateType : int
 {
 	STATE_PLAY
 };

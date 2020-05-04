@@ -3,7 +3,7 @@
 
 #include <cstdint>
 
-typedef uint8_t CubeID;
+typedef int8_t CubeID;
 
 struct Cube
 {
