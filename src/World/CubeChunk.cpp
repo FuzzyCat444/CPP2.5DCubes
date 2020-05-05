@@ -1,5 +1,7 @@
 #include "World/CubeChunk.h"
 
+#include <algorithm>
+
 CubeChunk::CubeChunk(int width, int height, int length) :
 	width(width), height(height), length(length),
 	cubes(width * height * length)
@@ -16,45 +18,41 @@ void CubeChunk::addProperties(std::pair<CubeID, CubeTypeProperties> propertiesLi
 	}
 }
 
-void CubeChunk::putCube(int x, int y, int z, Cube cube)
+void CubeChunk::setCube(int x, int y, int z, Cube cube)
 {
 	if (inBounds(x, y, z))
 	{
 		cubes[index(x, y, z)] = cube;
-		bool transparent = properties[cube.id].transparent;
-		setNeighborFlag(x - 1, y, z, CubeSide::X_POS, transparent);
-		setNeighborFlag(x + 1, y, z, CubeSide::X_NEG, transparent);
-		setNeighborFlag(x, y - 1, z, CubeSide::Y_POS, transparent);
-		setNeighborFlag(x, y, z - 1, CubeSide::Z_POS, transparent);
-		setNeighborFlag(x, y, z + 1, CubeSide::Z_NEG, transparent);
+	}
+}
+
+void CubeChunk::build(const Camera& camera, const CubeSheet& cubeSheet)
+{
+	sortedCubes.clear();
+	for (int z = 0; z < length; ++z)
+	{
+		for (int y = 0; y < height; ++y)
+		{
+			for (int x = 0; x < width; ++x)
+			{
+				updateVisibility(x, y, z, camera);
+			}
+		}
+	}
+	sortedCubes.sort([&](SortableCube sc1, SortableCube sc2)
+		{
+			return sc1.depth > sc2.depth;
+		});
+
+	for (auto it = sortedCubes.begin(); it != sortedCubes.end(); ++it)
+	{
 		
-		CubeTypeProperties xNegCube = getProperties(x - 1, y, z);
-		CubeTypeProperties xPosCube = getProperties(x + 1, y, z);
-		CubeTypeProperties yPosCube = getProperties(x, y + 1, z);
-		CubeTypeProperties zNegCube = getProperties(x, y, z - 1);
-		CubeTypeProperties zPosCube = getProperties(x, y, z + 1);
-		setNeighborFlag(x, y, z, CubeSide::X_NEG, xNegCube.transparent);
-		setNeighborFlag(x, y, z, CubeSide::X_POS, xPosCube.transparent);
-		setNeighborFlag(x, y, z, CubeSide::Y_POS, yPosCube.transparent);
-		setNeighborFlag(x, y, z, CubeSide::Z_NEG, zNegCube.transparent);
-		setNeighborFlag(x, y, z, CubeSide::Z_POS, zPosCube.transparent);
 	}
 }
 
 void CubeChunk::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 {
 	target.draw(builder, renderStates);
-}
-
-void CubeChunk::setNeighborFlag(int x, int y, int z, CubeSide side, bool transparent)
-{
-	if (inBounds(x, y, z))
-	{
-		Cube& cube = cubes.at(index(x, y, z));
-		int bit = transparent ? static_cast<int>(side) : 0;
-		cube.neighborFlags &= ~bit;
-		cube.neighborFlags |= bit;
-	}
 }
 
 CubeTypeProperties CubeChunk::getProperties(int x, int y, int z)
@@ -77,6 +75,31 @@ bool CubeChunk::inBounds(int x, int y, int z)
 int CubeChunk::index(int x, int y, int z)
 {
 	return z * width * height + y * width + x;
+}
+
+void CubeChunk::updateVisibility(int x, int y, int z, const Camera& camera)
+{
+	if (inBounds(x, y, z))
+	{
+		CubeTypeProperties xNegCube = getProperties(x - 1, y, z);
+		CubeTypeProperties xPosCube = getProperties(x + 1, y, z);
+		CubeTypeProperties yPosCube = getProperties(x, y + 1, z);
+		CubeTypeProperties zNegCube = getProperties(x, y, z - 1);
+		CubeTypeProperties zPosCube = getProperties(x, y, z + 1);
+		bool oneCubeTransparent = xNegCube.transparent
+							   || xPosCube.transparent
+							   || yPosCube.transparent
+							   || zNegCube.transparent
+							   || zPosCube.transparent;
+		const Cube& thisCube = cubes[index(x, y, z)];
+		if (thisCube.id != -1 && oneCubeTransparent)
+		{
+			SortableCube sc;
+			sc.depth = camera.depthOf(sf::Vector3f(x, y, z));
+			sc.cube == &thisCube;
+			sortedCubes.push_back(sc);
+		}
+	}
 }
 
 CubeTypeProperties::CubeTypeProperties() :

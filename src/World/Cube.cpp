@@ -6,6 +6,6 @@ Cube::Cube() :
 }
 
 Cube::Cube(CubeID id) :
-	id(id), neighborFlags(0)
+	id(id)
 {
 }
