@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <list>
+#include <array>
 #include <unordered_map>
 #include <cstdint>
 #include <utility>
@@ -30,7 +31,7 @@ public:
 
 	void setCube(int x, int y, int z, Cube cube);
 
-	void build(const Camera& camera, const CubeSheet& cubeSheet);
+	void build(const Camera& camera, CubeSheet& cubeSheet);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates renderStates) const override;
 private:
@@ -46,6 +47,7 @@ private:
 	struct SortableCube
 	{
 		float depth;
+		int x, y, z;
 		const Cube* cube;
 	};
 	std::list<SortableCube> sortedCubes;

@@ -1,6 +1,8 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <array>
+
 #include <SFML/Graphics.hpp>
 
 #include "Graphics/CubeBuilder.h"
@@ -20,6 +22,7 @@ public:
 	float depthOf(sf::Vector3f pt) const;
 
 	CubeOrientation getCubeOrientation() const;
+	std::array<sf::Vector2f, 3> getOrientationVectors() const;
 private:
 	void computeForwardVec();
 

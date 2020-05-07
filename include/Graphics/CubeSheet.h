@@ -7,19 +7,20 @@
 #include <SFML/Graphics.hpp>
 
 #include "Graphics/CubeBuilder.h"
+#include "World/Cube.h"
 
 class CubeSheet
 {
 public:
 	CubeSheet();
 
-	void add(int cubeID, const CubeMaterial& material);
+	void add(CubeID cubeID, const CubeMaterial& material);
 
-	void orient(const CubeOrientation& orientation, float scale);
+	void orient(const CubeOrientation& orientation);
 
-	CubeVisual& getCube(int cubeID);
+	CubeVisual& getCube(CubeID cubeID);
 private:
-	std::unordered_map<int, std::pair<CubeMaterial, CubeVisual>> cubes;
+	std::unordered_map<CubeID, std::pair<CubeMaterial, CubeVisual>> cubes;
 	CubeOrientation orientation;
 	float scale;
 };

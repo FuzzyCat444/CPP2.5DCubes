@@ -1,6 +1,7 @@
 #include "Graphics/CubeBuilder.h"
 
 #include <cmath>
+#include <iostream>
 
 #include "Util/MathFunctions.h"
 
@@ -58,9 +59,10 @@ CubeOrientation
 */
 
 CubeOrientation::CubeOrientation(float yaw, float pitch) :
-	yaw(std::fmod(yaw, 360.0f)),
+	yaw(std::fmod(360.0f + std::fmod(yaw, 360.0f), 360.0f)),
 	cosYaw(std::cos(rads(yaw))), sinYaw(std::sin(rads(yaw))),
-	cosYawMod90(std::cos(rads(std::fmod(yaw, 90.0f)))), sinYawMod90(std::sin(rads(std::fmod(yaw, 90.0f)))),
+	cosYawMod90(std::cos(rads(std::fmod(90.0f + std::fmod(yaw, 90.0f), 90.0f)))), 
+	sinYawMod90(std::sin(rads(std::fmod(90.0f + std::fmod(yaw, 90.0f), 90.0f)))),
 	cosPitch(std::cos(rads(pitch))), sinPitch(std::sin(rads(pitch)))
 {
 }

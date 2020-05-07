@@ -26,9 +26,11 @@ void CubeChunk::setCube(int x, int y, int z, Cube cube)
 	}
 }
 
-void CubeChunk::build(const Camera& camera, const CubeSheet& cubeSheet)
+void CubeChunk::build(const Camera& camera, CubeSheet& cubeSheet)
 {
+	builder.clear();
 	sortedCubes.clear();
+	cubeSheet.orient(camera.getCubeOrientation());
 	for (int z = 0; z < length; ++z)
 	{
 		for (int y = 0; y < height; ++y)
@@ -44,14 +46,24 @@ void CubeChunk::build(const Camera& camera, const CubeSheet& cubeSheet)
 			return sc1.depth > sc2.depth;
 		});
 
+	std::array<sf::Vector2f, 3> orientVecs = camera.getOrientationVectors();
+	sf::Vector2f right = orientVecs[0];
+	sf::Vector2f up = orientVecs[1];
+	sf::Vector2f forward = orientVecs[2];
+
 	for (auto it = sortedCubes.begin(); it != sortedCubes.end(); ++it)
 	{
-		
+		CubeVisual& visual = cubeSheet.getCube(it->cube->id);
+		visual.setPosition(static_cast<float>(it->x) * right
+						 + static_cast<float>(it->y) * up
+						 + static_cast<float>(it->z) * forward);
+		builder.putCube(visual);
 	}
 }
 
 void CubeChunk::draw(sf::RenderTarget& target, sf::RenderStates renderStates) const
 {
+	renderStates.transform *= getTransform();
 	target.draw(builder, renderStates);
 }
 
@@ -96,14 +108,17 @@ void CubeChunk::updateVisibility(int x, int y, int z, const Camera& camera)
 		{
 			SortableCube sc;
 			sc.depth = camera.depthOf(sf::Vector3f(x, y, z));
-			sc.cube == &thisCube;
+			sc.x = x;
+			sc.y = y;
+			sc.z = z;
+			sc.cube = &thisCube;
 			sortedCubes.push_back(sc);
 		}
 	}
 }
 
 CubeTypeProperties::CubeTypeProperties() :
-	transparent(false)
+	transparent(true)
 {
 }
 

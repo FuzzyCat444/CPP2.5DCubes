@@ -5,6 +5,9 @@
 #include "State/StateType.h"
 #include "Graphics/CubeBuilder.h"
 #include "Graphics/CubeSheet.h"
+#include "Graphics/Camera.h"
+#include "World/CubeChunk.h"
+#include "World/Cube.h"
 
 class PlayState : public State
 {
@@ -23,9 +26,23 @@ public:
 
 	void exit() override;
 private:
+	enum class TestCubeType : CubeID
+	{
+		EMPTY = -1,
+		STONE = 0,
+		DIRT = 1,
+		GRASS = 2,
+		WATER = 3,
+		SAND = 4,
+		WOOD = 5,
+		LEAVES = 6,
+		COUNT
+	};
+
 	sf::Texture cubeSheetTexture;
+	Camera camera;
 	CubeSheet cubeSheet;
-	CubeBuilder cubeBuilder;
+	CubeChunk chunk;
 };
 
 #endif

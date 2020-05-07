@@ -55,14 +55,32 @@ CubeOrientation Camera::getCubeOrientation() const
 	return CubeOrientation(-yaw, pitch);
 }
 
+std::array<sf::Vector2f, 3> Camera::getOrientationVectors() const
+{
+	std::array<sf::Vector2f, 3> vecs;
+
+	float yawRad = rads(yaw);
+	float pitchRad = rads(pitch);
+
+	float cosYaw = std::cos(-yawRad);
+	float sinYaw = std::sin(-yawRad);
+	float cosPitch = std::cos(pitchRad);
+	float sinPitch = std::sin(pitchRad);
+
+	vecs[0] = sf::Vector2f(cosYaw, sinYaw * sinPitch);  // X (right)
+	vecs[1] = sf::Vector2f(0.0f, 1.0f * cosPitch);      // Y (up)
+	vecs[2] = sf::Vector2f(-sinYaw, cosYaw * sinPitch); // Z (forward)
+
+	return vecs;
+}
+
 void Camera::computeForwardVec()
 {
 	float yawRad = rads(yaw);
 	float pitchRad = rads(pitch);
-	sf::Vector3f forward(0.0f, 0.0f, 0.0f);
 
 	float cosPitch = std::cos(pitchRad);
-	forward.y = -std::sin(pitchRad);
-	forward.x = -std::sin(yawRad) * cosPitch;
-	forward.z = std::cos(yawRad) * cosPitch;
+	forwardVec.y = -std::sin(pitchRad);
+	forwardVec.x = -std::sin(yawRad) * cosPitch;
+	forwardVec.z = std::cos(yawRad) * cosPitch;
 }

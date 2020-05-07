@@ -1,7 +1,7 @@
 #include "World/Cube.h"
 
 Cube::Cube() :
-	Cube(0)
+	Cube(-1)
 {
 }
 
