@@ -1,7 +1,6 @@
 #include "Graphics/CubeBuilder.h"
 
 #include <cmath>
-#include <iostream>
 
 #include "Util/MathFunctions.h"
 
