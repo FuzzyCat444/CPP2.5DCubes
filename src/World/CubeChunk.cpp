@@ -50,9 +50,9 @@ void CubeChunk::build(const Camera& camera, CubeSheet& cubeSheet)
 	sf::Vector2f right = orientVecs[0];
 	sf::Vector2f up = orientVecs[1];
 	sf::Vector2f forward = orientVecs[2];
-	sf::Vector2f offsetRight = 0.5f * static_cast<float>(width - 0.5f) * right;
-	sf::Vector2f offsetUp = 0.5f * static_cast<float>(height - 0.5f) * up;
-	sf::Vector2f offsetForward = 0.5f * static_cast<float>(length - 0.5f) * forward;
+	sf::Vector2f offsetRight = (0.5f * width - 0.5f) * right;
+	sf::Vector2f offsetUp = (0.5f * height - 0.5f) * up;
+	sf::Vector2f offsetForward = (0.5f * length - 0.5f) * forward;
 
 	for (auto it = sortedCubes.begin(); it != sortedCubes.end(); ++it)
 	{
