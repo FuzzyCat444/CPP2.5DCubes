@@ -9,7 +9,6 @@
 #include <SFML/Graphics.hpp>
 
 #include "State/State.h"
-#include "State/PlayState.h"
 
 class StateManager : public sf::Drawable
 {
