@@ -1,23 +1,51 @@
 #include "Application.h"
 
 #include <utility>
+#include <cmath>
+#include <ctime>
 
 #include "Util/ColorShade.h"
+#include "Util/MathFunctions.h"
 
 Application::Application() :
-	chunk(8, 9, 8)
+	chunk(50, 20, 50),
+	noise(time(NULL), 10.0f),
+	zoom(0.2f),
+	zoomVel(0.0f),
+	qPressed(false),
+	ePressed(false),
+	spin(45.0f),
+	spinVel(0.0f),
+	wPressed(false),
+	aPressed(false),
+	sPressed(false),
+	dPressed(false),
+	x(0.0f),
+	y(0.0f),
+	xVel(0.0f),
+	yVel(0.0f)
 {
 	std::pair<CubeID, CubeTypeProperties> props[static_cast<int>(Cubes::COUNT)] =
 	{
 		std::make_pair(cbID(Cubes::STONE), CubeTypeProperties(false)),
 		std::make_pair(cbID(Cubes::DIRT), CubeTypeProperties(false)),
 		std::make_pair(cbID(Cubes::GRASS), CubeTypeProperties(false)),
-		std::make_pair(cbID(Cubes::WATER), CubeTypeProperties(false)),
+		std::make_pair(cbID(Cubes::WATER), CubeTypeProperties(true)),
 		std::make_pair(cbID(Cubes::SAND), CubeTypeProperties(false)),
 		std::make_pair(cbID(Cubes::WOOD), CubeTypeProperties(false)),
 		std::make_pair(cbID(Cubes::LEAVES), CubeTypeProperties(true)),
 	};
 	chunk.addProperties(props, 7);
+
+	for (int z = 0; z < 50; ++z)
+	{
+		for (int x = 0; x < 50; ++x)
+		{
+			chunk.setCube(x, (int) (noise.sample(x, z) * 20.0f), z, Cube(cbID(Cubes::STONE)));
+		}
+	}
+	
+	/*
 	for (int z = 0; z < 8; ++z)
 	{
 		for (int x = 0; x < 8; ++x)
@@ -58,6 +86,8 @@ Application::Application() :
 	chunk.setCube(5, 3, 5, Cube(cbID(Cubes::WOOD)));
 	chunk.setCube(5, 4, 5, Cube(cbID(Cubes::WOOD)));
 	chunk.setCube(5, 5, 5, Cube(cbID(Cubes::WOOD)));
+	*/
+	
 
 	camera.setPitch(30.0f);
 }
@@ -93,6 +123,12 @@ void Application::run()
 void Application::init()
 {
 	cubeSheetTexture.loadFromFile("cubesheettemp.png");
+	sf::Color col(255, 255, 255, 20);
+	CubeMaterial waterMat =
+	{
+		0, 0, 16,
+		col, col, col, col, col
+	};
 	CubeMaterial mat =
 	{
 		0, 0, 16,
@@ -113,7 +149,7 @@ void Application::init()
 	cubeSheet.add(cbID(Cubes::GRASS), mat);
 	mat.indexX = 0;
 	mat.indexY = 3;
-	cubeSheet.add(cbID(Cubes::WATER), mat);
+	cubeSheet.add(cbID(Cubes::WATER), waterMat);
 	mat.indexX = 1;
 	mat.indexY = 0;
 	cubeSheet.add(cbID(Cubes::SAND), mat);
@@ -130,16 +166,87 @@ void Application::handleEvent(const sf::Event& ev)
 	static float y = 0.0f;
 	if (ev.type == sf::Event::MouseMoved)
 	{
-		camera.rotatePitch((ev.mouseMove.y - y) * 0.5f);
+		camera.setPitch(ev.mouseMove.y / 600.0f * 90.0f);
 		y = ev.mouseMove.y;
+	}
+	if (ev.type == sf::Event::MouseWheelScrolled)
+	{
+		zoomVel += ev.mouseWheelScroll.delta * 0.01f;
+	}
+	if (ev.type == sf::Event::KeyPressed)
+	{
+		if (ev.key.code == sf::Keyboard::Q)
+			qPressed = true;
+		if (ev.key.code == sf::Keyboard::E)
+			ePressed = true;
+		if (ev.key.code == sf::Keyboard::W)
+			wPressed = true;
+		if (ev.key.code == sf::Keyboard::A)
+			aPressed = true;
+		if (ev.key.code == sf::Keyboard::S)
+			sPressed = true;
+		if (ev.key.code == sf::Keyboard::D)
+			dPressed = true;
+	}
+	if (ev.type == sf::Event::KeyReleased)
+	{
+		if (ev.key.code == sf::Keyboard::Q)
+			qPressed = false;
+		if (ev.key.code == sf::Keyboard::E)
+			ePressed = false;
+		if (ev.key.code == sf::Keyboard::W)
+			wPressed = false;
+		if (ev.key.code == sf::Keyboard::A)
+			aPressed = false;
+		if (ev.key.code == sf::Keyboard::S)
+			sPressed = false;
+		if (ev.key.code == sf::Keyboard::D)
+			dPressed = false;
 	}
 }
 
 void Application::update()
 {
-	camera.rotateYaw(1.0f);
-	chunk.setScale(50.0f, 50.0f);
-	chunk.setPosition(400.0f, 350.0f);
+	if (zoomVel > 1.0f)
+		zoomVel = 1.0f;
+	if (zoomVel < -1.0f)
+		zoomVel = -1.0f;
+	zoom += zoomVel;
+	zoomVel *= 0.9f;
+	if (zoom < 0.2f)
+	{
+		zoom = 0.2f;
+		zoomVel = 0.0f;
+	}
+	if (zoom > 1.7f)
+	{
+		zoom = 1.7f;
+		zoomVel = 0.0f;
+	}
+
+	if (qPressed)
+		spinVel -= 0.5f;
+	if (ePressed)
+		spinVel += 0.5f;
+	spin += spinVel;
+	spinVel *= 0.7f;
+
+	if (wPressed)
+		yVel += 2.0f;
+	if (sPressed)
+		yVel -= 2.0f;
+	if (aPressed)
+		xVel -= 2.0f;
+	if (dPressed)
+		xVel += 2.0f;
+	x += xVel;
+	y += yVel;
+	xVel *= 0.85f;
+	yVel *= 0.85f;
+
+	camera.setYaw(spin);
+	chunk.setScale(50.0f * zoom, 50.0f * zoom);
+	chunk.setPosition(400.0f - x, 350.0f - y);
 	chunk.build(camera, cubeSheet);
 }
 
