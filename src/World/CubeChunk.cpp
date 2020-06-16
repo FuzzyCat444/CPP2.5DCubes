@@ -4,7 +4,8 @@
 
 CubeChunk::CubeChunk(int width, int height, int length) :
 	width(width), height(height), length(length),
-	cubes(width * height * length)
+	cubes(width * height * length),
+	needsNeighborCheck(true)
 {
 	std::pair<CubeID, CubeTypeProperties> empty = std::make_pair(-1, CubeTypeProperties(true));
 	addProperties(&empty, 1);
@@ -23,23 +24,41 @@ void CubeChunk::setCube(int x, int y, int z, Cube cube)
 	if (inBounds(x, y, z))
 	{
 		cubes[index(x, y, z)] = cube;
+		needsNeighborCheck = true;
 	}
+}
+
+Cube CubeChunk::getCube(int x, int y, int z)
+{
+	if (inBounds(x, y, z))
+	{
+		return cubes.at(index(x, y, z));
+	}
+	return Cube(-1);
 }
 
 void CubeChunk::build(const Camera& camera, CubeSheet& cubeSheet)
 {
 	builder.clear();
-	sortedCubes.clear();
 	cubeSheet.orient(camera.getCubeOrientation());
-	for (int z = 0; z < length; ++z)
+	if (needsNeighborCheck)
 	{
-		for (int y = 0; y < height; ++y)
+		sortedCubes.clear();
+		for (int z = 0; z < length; ++z)
 		{
-			for (int x = 0; x < width; ++x)
+			for (int y = 0; y < height; ++y)
 			{
-				updateVisibility(x, y, z, camera);
+				for (int x = 0; x < width; ++x)
+				{
+					updateVisibility(x, y, z, camera);
+				}
 			}
 		}
+		needsNeighborCheck = false;
+	}
+	for (auto it = sortedCubes.begin(); it != sortedCubes.end(); ++it)
+	{
+		positionSortedCube(*it, camera);
 	}
 	sortedCubes.sort([&](SortableCube sc1, SortableCube sc2)
 		{
@@ -118,6 +137,11 @@ void CubeChunk::updateVisibility(int x, int y, int z, const Camera& camera)
 			sortedCubes.push_back(sc);
 		}
 	}
+}
+
+void CubeChunk::positionSortedCube(SortableCube& cube, const Camera& camera)
+{
+	cube.depth = camera.depthOf(sf::Vector3f(cube.x, cube.y, cube.z));
 }
 
 CubeTypeProperties::CubeTypeProperties() :

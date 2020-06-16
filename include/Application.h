@@ -22,6 +22,14 @@ private:
 	void update();
 
 	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+	long long frame;
+
+	enum class ChunkSize
+	{
+		SMALL, MEDIUM, LARGE
+	};
+
+	void chunkGen(ChunkSize size);
 
 	enum class Cubes
 	{
@@ -44,6 +52,11 @@ private:
 	CubeChunk chunk;
 	DistanceNoise noise;
 
+	float delta;
+	float fps;
+
+	void zeroVels();
+
 	float zoom;
 	float zoomVel;
 
@@ -60,6 +73,9 @@ private:
 	float y;
 	float xVel;
 	float yVel;
+
+	int width;
+	int height;
 };
 
 #endif

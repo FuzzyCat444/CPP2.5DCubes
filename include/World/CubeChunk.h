@@ -31,6 +31,8 @@ public:
 
 	void setCube(int x, int y, int z, Cube cube);
 
+	Cube getCube(int x, int y, int z);
+
 	void build(const Camera& camera, CubeSheet& cubeSheet);
 
 	void draw(sf::RenderTarget& target, sf::RenderStates renderStates) const override;
@@ -50,6 +52,9 @@ private:
 		int x, y, z;
 		const Cube* cube;
 	};
+	void positionSortedCube(SortableCube& cube, const Camera& camera);
+
+	bool needsNeighborCheck;
 	std::list<SortableCube> sortedCubes;
 	CubeBuilder builder;
 };
